@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: order-service
+  config:
+    import: classpath:common.yml
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/order_db?replicaSet=rs0}
+  kafka:
+    consumer:
+      group-id: order-service
+
+server:
+  port: ${PORT:8081}
+
+mongock:
+  migration-scan-package:
+    - com.paymentledger.common.migration
+    - com.paymentledger.order.migration

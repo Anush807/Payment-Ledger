@@ -1,0 +1,81 @@
+{
+  "uid": "payment-ledger",
+  "title": "Payment Ledger",
+  "tags": ["saga", "ledger"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": {"from": "now-30m", "to": "now"},
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Ledger invariant violations (must be 0)",
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 0},
+      "targets": [{"expr": "max(ledger_invariant_violations)", "refId": "A"}],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "red", "value": 1}
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {"colorMode": "background", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "stat",
+      "title": "Stuck sagas",
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 0},
+      "targets": [{"expr": "max(saga_stuck_total)", "refId": "A"}],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]
+          }
+        },
+        "overrides": []
+      },
+      "options": {"colorMode": "background", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "timeseries",
+      "title": "Saga outcomes per second",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [{"expr": "sum by (outcome) (rate(saga_completed_total[1m]))", "legendFormat": "{{outcome}}", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Saga duration (p50 / p95 / p99)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {"expr": "saga_duration_seconds{quantile=\"0.5\"}", "legendFormat": "p50", "refId": "A"},
+        {"expr": "saga_duration_seconds{quantile=\"0.95\"}", "legendFormat": "p95", "refId": "B"},
+        {"expr": "saga_duration_seconds{quantile=\"0.99\"}", "legendFormat": "p99", "refId": "C"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Duplicate events skipped",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [{"expr": "sum by (service) (rate(duplicate_events_skipped_total[1m]))", "legendFormat": "{{service}}", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Dead letters",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [{"expr": "sum by (topic) (increase(dlt_messages_total[5m]))", "legendFormat": "{{topic}}", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Consumer lag per group",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "targets": [{"expr": "sum by (consumergroup) (kafka_consumergroup_lag)", "legendFormat": "{{consumergroup}}", "refId": "A"}]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

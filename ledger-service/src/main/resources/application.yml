@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: ledger-service
+  config:
+    import: classpath:common.yml
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/ledger_db?replicaSet=rs0}
+  kafka:
+    consumer:
+      group-id: ledger-service
+
+server:
+  port: ${PORT:8084}
+
+ledger:
+  fee-bps: ${FEE_BPS:200}
+
+mongock:
+  migration-scan-package:
+    - com.paymentledger.common.migration
+    - com.paymentledger.ledger.migration

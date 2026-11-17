@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: wallet-service
+  config:
+    import: classpath:common.yml
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/wallet_db?replicaSet=rs0}
+  kafka:
+    consumer:
+      group-id: wallet-service
+
+server:
+  port: ${PORT:8082}
+
+mongock:
+  migration-scan-package:
+    - com.paymentledger.common.migration
+    - com.paymentledger.wallet.migration

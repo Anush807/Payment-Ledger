@@ -1,0 +1,61 @@
+# Imported by every service via spring.config.import. Service files override what they need.
+spring:
+  main:
+    banner-mode: off
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/?replicaSet=rs0}
+      auto-index-creation: false
+      uuid-representation: standard
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      max-poll-records: 50
+      properties:
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+    listener:
+      ack-mode: manual_immediate
+      missing-topics-fatal: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+mongock:
+  runner-type: InitializingBean
+  migration-scan-package:
+    - com.paymentledger.common.migration
+
+api:
+  key: ${API_KEY:dev-key}
+
+saga:
+  timeout: 30s
+  stuck-after: 5m
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      service: ${spring.application.name}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

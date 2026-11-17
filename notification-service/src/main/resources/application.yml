@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: classpath:common.yml
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/notification_db?replicaSet=rs0}
+  kafka:
+    consumer:
+      group-id: notification-service
+
+server:
+  port: ${PORT:8085}
+
+mongock:
+  migration-scan-package:
+    - com.paymentledger.common.migration
+    - com.paymentledger.notification.migration
