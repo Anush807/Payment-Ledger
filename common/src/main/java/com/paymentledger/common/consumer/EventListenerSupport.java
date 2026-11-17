@@ -49,13 +49,15 @@ public abstract class EventListenerSupport {
             MDC.put("eventId", event.eventId().toString());
             if (processedEvents.alreadyProcessed(group(), event.eventId())) {
                 metrics.duplicateSkipped(group());
-                return;
+            } else {
+                runInTransaction(event);
             }
-            runInTransaction(event);
         } finally {
             Trace.clear();
-            ack.acknowledge();
         }
+        // only after the DB commit: a throw above skips this, and the error handler owns the
+        // offset once it has retried or dead-lettered the record
+        ack.acknowledge();
     }
 
     private void runInTransaction(EventEnvelope event) {
